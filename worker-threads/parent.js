@@ -56,5 +56,6 @@ class CSVConverter {
   }
 }
 
-const csvConverter = new CSVConverter("csv-files");
-await csvConverter.convert();
+// const csvConverter = new CSVConverter("csv-files");
+// await csvConverter.convert();
+export default CSVConverter
