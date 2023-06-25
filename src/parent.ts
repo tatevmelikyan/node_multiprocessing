@@ -5,7 +5,9 @@ import { availableParallelism } from "node:os";
 import { existsSync, mkdirSync } from "node:fs";
 
 class CSVConverter {
-  constructor(csvDirPath) {
+  csvDirPath: string;
+
+  constructor(csvDirPath: string) {
     if (!csvDirPath) {
       throw new Error("Directory path not provided");
     }
@@ -33,7 +35,7 @@ class CSVConverter {
     }
   }
 
-  async createWorkers(files) {
+  async createWorkers(files: string[]) {
     const convertedDirPath = this.createConvertedDir();
     const numFiles = files.length;
     const numCPUs = availableParallelism();
@@ -42,7 +44,7 @@ class CSVConverter {
     let remainingFiles = numFiles % numWorkers;
 
     for (let i = 0; i < numWorkers; i++) {
-      const worker = new Worker("./worker-threads/child.js");
+      const worker = new Worker("./dist/child.js");
       let removeCount = filesPerWorker;
       if (remainingFiles > 0) {
         removeCount += 1;
@@ -58,4 +60,4 @@ class CSVConverter {
 
 // const csvConverter = new CSVConverter("csv-files");
 // await csvConverter.convert();
-export default CSVConverter
+export default CSVConverter;

@@ -4,16 +4,22 @@ import { writeFile } from "fs/promises";
 import csv from "csv-parser";
 import path from "path";
 
-async function parseCSV(fileToParse, convertedDirPath) {
-  const startTime = new Date();
-  const results = [];
+
+interface IWorkerMessage {
+  convertedDirPath: string;
+   filesToParse: string[]
+}
+
+async function parseCSV(fileToParse: string, convertedDirPath: string) {
+  const startTime = new Date().getTime();
+  const results: {}[] = [];
   createReadStream(fileToParse)
     .pipe(csv())
-    .on("data", (data) => {
+    .on("data", (data: {}[]) => {
       results.push(data);
     })
     .on("end", async () => {
-      const endTime = new Date();
+      const endTime = new Date().getTime();
       const duration = endTime - startTime;
       const parsedData = JSON.stringify(results);
       console.log(
@@ -27,12 +33,12 @@ async function parseCSV(fileToParse, convertedDirPath) {
         await writeFile(convertedFilePath, parsedData);
         process.exit();
       } catch (err) {
-        console.error(err.message);
+        console.error(err);
       }
     });
 }
 
-parentPort.on("message", (msg) => {
+parentPort?.on("message", (msg: IWorkerMessage) => {
   const { filesToParse, convertedDirPath } = msg;
   filesToParse.forEach((file) => {
     parseCSV(file, convertedDirPath);
